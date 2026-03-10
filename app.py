@@ -4,7 +4,7 @@ from PIL import Image
 from google import genai
 
 # Gemini API key
-API_KEY = "AIzaSyCrePeWTnPC7_XVh6PI55QKqOYwwo_NhgM"
+API_KEY = "AIzaSyDP3qymM9TaExdRy9FhNidJltwqn53IxQw"
 
 # Initialize client
 client = genai.Client(api_key=API_KEY)
