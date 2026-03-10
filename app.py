@@ -51,7 +51,7 @@ if st.button("Generate Answer"):
 
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
-                contents=question
+                contents=[{"text": question}]
             )
 
         st.write(response.text)
