@@ -3,7 +3,7 @@ import pandas as pd
 from PIL import Image
 from google import genai
 
-# OPEN API KEY (not using secrets)
+# API key
 API_KEY = "AIzaSyCrePeWTnPC7_XVh6PI55QKqOYwwo_NhgM"
 
 client = genai.Client(api_key=API_KEY)
@@ -12,7 +12,7 @@ st.title("🌿 Plant AI Assistant")
 
 st.write("Upload plant datasets or images and ask AI questions.")
 
-# Upload dataset
+# upload dataset
 dataset = st.file_uploader("Upload Plant Dataset (CSV)", type=["csv"])
 
 if dataset:
@@ -20,30 +20,35 @@ if dataset:
     st.write("Dataset Preview")
     st.dataframe(df.head())
 
-# Upload plant image
-image_file = st.file_uploader("Upload Plant Image", type=["jpg", "png"])
+# upload image
+image_file = st.file_uploader("Upload Plant Image", type=["jpg","png","jpeg"])
+
+image = None
 
 if image_file:
     image = Image.open(image_file)
     st.image(image, caption="Uploaded Plant Image")
 
-# Ask AI
+# ask AI
 question = st.text_input("Ask AI about plant stress or dataset")
 
-if st.button("Generate Answer") and question:
+if st.button("Generate Answer"):
 
-    prompt = f"""
-    You are a plant scientist AI.
+    if question:
 
-    Answer the following question clearly and scientifically:
+        if image:
 
-    {question}
-    """
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=[question, image]
+            )
 
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=prompt
-    )
+        else:
 
-    st.subheader("AI Response")
-    st.write(response.text)
+            response = client.models.generate_content(
+                model="gemini-1.5-flash",
+                contents=question
+            )
+
+        st.subheader("AI Response")
+        st.write(response.text)
