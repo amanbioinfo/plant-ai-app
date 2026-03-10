@@ -1,18 +1,18 @@
 import streamlit as st
 import pandas as pd
-import google.generativeai as genai
 from PIL import Image
+from google import genai
 
-# read API key securely
-genai.configure(api_key=st.secrets["AIzaSyCrePeWTnPC7_XVh6PI55QKqOYwwo_NhgM"])
+# OPEN API KEY (not using secrets)
+API_KEY = "AIzaSyCrePeWTnPC7_XVh6PI55QKqOYwwo_NhgM"
 
-model = genai.GenerativeModel("gemini-pro")
+client = genai.Client(api_key=API_KEY)
 
 st.title("🌿 Plant AI Assistant")
 
 st.write("Upload plant datasets or images and ask AI questions.")
 
-# upload dataset
+# Upload dataset
 dataset = st.file_uploader("Upload Plant Dataset (CSV)", type=["csv"])
 
 if dataset:
@@ -20,26 +20,30 @@ if dataset:
     st.write("Dataset Preview")
     st.dataframe(df.head())
 
-# upload image
-image_file = st.file_uploader("Upload Plant Image", type=["jpg","png"])
+# Upload plant image
+image_file = st.file_uploader("Upload Plant Image", type=["jpg", "png"])
 
 if image_file:
     image = Image.open(image_file)
     st.image(image, caption="Uploaded Plant Image")
 
-# ask AI
+# Ask AI
 question = st.text_input("Ask AI about plant stress or dataset")
 
-if st.button("Generate Answer"):
+if st.button("Generate Answer") and question:
 
     prompt = f"""
     You are a plant scientist AI.
-    Answer this question clearly:
+
+    Answer the following question clearly and scientifically:
 
     {question}
     """
 
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=prompt
+    )
 
     st.subheader("AI Response")
     st.write(response.text)
